@@ -1,0 +1,56 @@
+name: dashboard-perron
+version: '0.1'
+summary: Dashboard Automotriz IoT
+description: Test Dashboard
+
+base: core22
+confinement: devmode
+grade: devel
+
+# --- CAMBIO IMPORTANTE POR TU PC NUEVA ---
+architectures:
+  - build-on: [amd64, arm64]
+    run-on: arm64
+
+apps:
+  dashboard-perron:
+    command: bin/python3 $SNAP/main.py
+    daemon: simple
+    restart-condition: always
+    extensions: [gnome]
+    plugs:
+      - i2c
+      - network
+      - network-bind
+      - opengl
+      - wayland
+    environment:
+      QT_QPA_PLATFORM: wayland
+      PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$SNAP/lib/python3.10/site-packages
+
+parts:
+  my-app:
+    plugin: dump
+    source: .
+    stage-packages:
+      - libi2c-dev
+
+  dependencies:
+    plugin: python
+    source: .
+    python-packages:
+      - PySide6
+      - smbus2
+      - shiboken6
+    stage-packages:
+      - libqt6gui6
+      - libqt6widgets6
+      - libqt6qml6
+      - libqt6core6
+      - libqt6quick6
+      - libqt6waylandclient6
+      - libqt6waylandcompositor6
+      - qml6-module-qtquick
+      - qml6-module-qtquick-controls
+      - qml6-module-qtquick-window
+      - i2c-tools
