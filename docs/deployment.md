@@ -18,4 +18,21 @@ Connection process:
     
 ![First dashboard run](images/dash-preliminar.png)
 
+V 1.2:
+
+To send new modified code to the raspberry to run them on the external screen:  
+
+-Connect to the raspberry as previously shown  
+-On a new powershell terminal, use "scp -r "C:\Project\route" ubuntu@raspberrypi.local:~/" to send the whole folder or just type the name of the file you want to send  
+-Go to the ssh terminal and restart the dashboard to see the changes made using: sudo systemctl restart dashboard.service  
+
+To test the UI faster without sending everything to the Raspberry Pi every single time, I set up a way to run it locally on the PC. 
+
+Local testing process:
+1.- Open a new terminal in VSCode (make sure it's running on your local machine, not the SSH one).
+2.- Install PySide6 if you haven't already: "pip install PySide6".
+3.- Run the script directly with "python main.py".
+
+This opens the dashboard in a window on the computer using fake data, so we can edit the QML and see changes instantly without the hardware.
+
 

@@ -1,0 +1,11 @@
+This document is for everything related to the communication details, Back-end to Front-end, Data flow, Signals and general design
+
+V 1.2:
+
+Separated the project into two main parts to make things easier:
+- main.py: Handles all the backend stuff (processing data and later the serial communication with the Pico).
+- dashboard.qml: Just for the visuals, colors, and animations.
+
+Now we have two ways to run this: "Hardware mode" directly on the Pi, or "Local mode" on the PC just for designing the interface.
+
+![First dashboard run](images/design2.jpg)
