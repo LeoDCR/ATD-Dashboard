@@ -36,3 +36,19 @@ Local testing process:
 This opens the dashboard in a window on the computer using fake data, so we can edit the QML and see changes instantly without the hardware.
 
 
+V 1.4:
+
+**Autostart Config (The "Turn Key" Feature):**
+I finally got tired of connecting via SSH and manually typing commands to start the dashboard every time I booted the Raspberry Pi. To make it behave like a real motorcycle dashboard (turns on when the key turns), I created a systemd service.
+
+How to set up the Autostart:
+1.- Go to the systemd directory: `cd /etc/systemd/system/`
+2.- Create a new service file: `sudo nano dashboard.service`
+3.- Paste the configuration (needs to point to the python env and the main.py location).
+4.- Enable and start it: 
+   `sudo systemctl enable dashboard.service`
+   `sudo systemctl start dashboard.service`
+
+Now, the UI boots up automatically as soon as the Raspberry Pi has power.
+
+![First dashboard run](images/design4.png)

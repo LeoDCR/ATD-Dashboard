@@ -16,39 +16,37 @@ Window {
 
     visible: true
 
-    width: 800
+    width: 1024
 
-    height: 480
+    height: 1000
 
     title: "Moto Dashboard"
 
-    color: "#050505" // Casi negro para mejor contraste
-
-    visibility: Window.FullScreen // Importante para EGLFS
+    color: "#050505"
 
 
 
-    // --- PROPIEDADES (Simulando conexión con Python) ---
+    // --- PROPIEDADES ---
 
-    // Estas son las que tu backend actualizará
+    property real speedVal: 0
 
-    property real speedVal: 0     // km/h
+    property real rpmVal: 0
 
-    property real rpmVal: 0       // 0 a 12000
+    property real tempVal: 85
 
-    property real tempVal: 85     // Grados C
+    property real fuelVal: 100 
 
-    property real battVal: 12.4   // Voltios
-
-    property string gearVal: "N"  // Marcha
+    property string gearVal: "N"
 
     property bool leftTurn: false
 
     property bool rightTurn: false
 
+    property bool lowBeam: false
+
+    property bool highBeam: false
 
 
-    // Configuraciones máximas
 
     readonly property real maxRPM: 12000
 
@@ -56,51 +54,55 @@ Window {
 
 
 
-    // --- FUENTES ---
-
     FontLoader {
 
         id: mainFont
 
-        // Asegúrate de tener este archivo o comenta esta línea
-
-        source: "Orbitron-Bold.ttf" 
+        source: "Orbitron-VariableFont_wght.ttf"
 
     }
 
 
 
-    // --- LÓGICA DE SIMULACIÓN (Bórralo cuando conectes Python) ---
+    // =========================================================
 
-    Timer {
+    //   CONEXIÓN CON PYTHON (EL NUEVO CEREBRO)
 
-        interval: 50; running: true; repeat: true
+    // =========================================================
 
-        onTriggered: {
+    Connections {
 
-            // Simular RPM subiendo y bajando
+        target: backend
 
-            root.rpmVal = (Math.sin(Date.now() / 1000) + 1) * 5500 + 1000
+        
 
-            root.speedVal = Math.floor(root.rpmVal * 0.012)
+        // Estas funciones se activan mágicamente cuando Python "grita" un cambio
 
-            
+        function onSpeedChanged(val) { root.speedVal = val }
 
-            // Simular Marcha
+        function onRpmChanged(val) { root.rpmVal = val }
 
-            if(speedVal == 0) gearVal = "N"
+        function onTempChanged(val) { root.tempVal = val }
 
-            else if(speedVal < 20) gearVal = "1"
+        function onFuelChanged(val) { root.fuelVal = val }
 
-            else if(speedVal < 40) gearVal = "2"
+        
 
-            else gearVal = "3"
+        function onLightsChanged(low, high) { 
 
+            root.lowBeam = low; 
 
+            root.highBeam = high; 
 
-            // Simular Temperatura crítica
+        }
 
-            root.tempVal = 80 + (Math.sin(Date.now() / 5000) * 25)
+        
+
+        function onTurnSignalsChanged(left, right) { 
+
+            root.leftTurn = left; 
+
+            root.rightTurn = right; 
 
         }
 
@@ -108,7 +110,35 @@ Window {
 
 
 
-    // --- FONDO TÉCNICO (Grid) ---
+    // =========================================================
+
+    //   SIMULACIÓN ANTIGUA (COMENTADA POR SI ACASO)
+
+    // =========================================================
+
+    /*
+
+    Timer {
+
+        interval: 50; running: true; repeat: true
+
+        property int tickCounter: 0
+
+        onTriggered: {
+
+            // Aquí iba tu código viejo de Math.sin()
+
+            // Lo dejamos comentado por si algún día quieres revivirlo desde QML
+
+        }
+
+    }
+
+    */
+
+
+
+    // --- FONDO GRID ---
 
     Item {
 
@@ -116,31 +146,35 @@ Window {
 
         opacity: 0.2
 
+        // Líneas Verticales
+
         Repeater {
 
-            model: 10
+            model: 11 
 
-            Item {
+            Item { 
 
                 width: 1; height: parent.height
 
-                x: parent.width / 10 * index
+                x: (parent.width / 10) * index
 
                 Rectangle { anchors.fill: parent; color: "#00FFFF" }
 
             }
 
         }
+
+        // Líneas Horizontales
 
         Repeater {
 
-            model: 6
+            model: 7
 
-            Item {
+            Item { 
 
                 height: 1; width: parent.width
 
-                y: parent.height / 6 * index
+                y: (parent.height / 6) * index
 
                 Rectangle { anchors.fill: parent; color: "#00FFFF" }
 
@@ -152,77 +186,45 @@ Window {
 
 
 
-    // --- COMPONENTE: INDICADOR DE DIRECCIONALES ---
 
-    Row {
+
+    // =========================================================
+
+    //    ELEMENTOS DE ESQUINA SUPERIOR (DIRECCIONALES)
+
+    // =========================================================
+
+
+
+    // DIRECCIONAL IZQUIERDA
+
+    Item {
+
+        width: 80; height: 60
 
         anchors.top: parent.top
 
-        anchors.topMargin: 20
+        anchors.left: parent.left
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: 30
 
-        spacing: 400 // Separadas a los extremos del arco
+        opacity: root.leftTurn ? 1.0 : 0.15
 
+        Canvas {
 
+            anchors.fill: parent
 
-        // Izquierda
+            onPaint: {
 
-        Item {
+                var ctx = getContext("2d");
 
-            width: 60; height: 40
+                ctx.fillStyle = "#00FF00";
 
-            opacity: root.leftTurn ? 1.0 : 0.1
+                ctx.beginPath();
 
-            Canvas {
+                ctx.moveTo(60, 10); ctx.lineTo(10, 30); ctx.lineTo(60, 50);
 
-                anchors.fill: parent
-
-                onPaint: {
-
-                    var ctx = getContext("2d");
-
-                    ctx.fillStyle = "#00FF00";
-
-                    ctx.beginPath();
-
-                    ctx.moveTo(40, 0); ctx.lineTo(0, 20); ctx.lineTo(40, 40);
-
-                    ctx.closePath(); ctx.fill();
-
-                }
-
-            }
-
-        }
-
-        // Derecha
-
-        Item {
-
-            width: 60; height: 40
-
-            opacity: root.rightTurn ? 1.0 : 0.1
-
-            Canvas {
-
-                anchors.fill: parent
-
-                layoutDirection: Qt.RightToLeft // Espejo
-
-                onPaint: {
-
-                    var ctx = getContext("2d");
-
-                    ctx.fillStyle = "#00FF00";
-
-                    ctx.beginPath();
-
-                    ctx.moveTo(0, 0); ctx.lineTo(40, 20); ctx.lineTo(0, 40);
-
-                    ctx.closePath(); ctx.fill();
-
-                }
+                ctx.closePath(); ctx.fill();
 
             }
 
@@ -232,7 +234,53 @@ Window {
 
 
 
-    // --- COMPONENTE PRINCIPAL: TACÓMETRO (RPM) ---
+    // DIRECCIONAL DERECHA
+
+    Item {
+
+        width: 80; height: 60
+
+        anchors.top: parent.top
+
+        anchors.right: parent.right
+
+        anchors.margins: 30
+
+        opacity: root.rightTurn ? 1.0 : 0.15
+
+        Canvas {
+
+            anchors.fill: parent
+
+            onPaint: {
+
+                var ctx = getContext("2d");
+
+                ctx.fillStyle = "#00FF00";
+
+                ctx.beginPath();
+
+                ctx.moveTo(20, 10); ctx.lineTo(70, 30); ctx.lineTo(20, 50);
+
+                ctx.closePath(); ctx.fill();
+
+            }
+
+        }
+
+    }
+
+
+
+    // =========================================================
+
+    //    CLUSTER CENTRAL (TACÓMETRO, VELOCIDAD, LUCES)
+
+    // =========================================================
+
+
+
+    // 1. EL ARCO DEL TACÓMETRO
 
     Item {
 
@@ -240,11 +288,9 @@ Window {
 
         width: 600; height: 600
 
-        anchors.centerIn: parent
+        anchors.centerIn: parent 
 
-        anchors.verticalCenterOffset: 150 // Bajar el centro para que sea un arco superior
-
-
+        
 
         Canvas {
 
@@ -253,8 +299,6 @@ Window {
             anchors.fill: parent
 
             property real rpmPercentage: root.rpmVal / root.maxRPM
-
-
 
             onRpmPercentageChanged: requestPaint()
 
@@ -270,9 +314,9 @@ Window {
 
                 var radius = 260;
 
-                var startAngle = Math.PI * 0.8; // Inicio a la izquierda
+                var startAngle = Math.PI * 0.75; 
 
-                var endAngle = Math.PI * 2.2;   // Fin a la derecha
+                var endAngle = Math.PI * 2.25; 
 
                 var totalAngle = endAngle - startAngle;
 
@@ -280,39 +324,27 @@ Window {
 
                 ctx.reset();
 
+                ctx.lineCap = "round"; 
 
 
-                // 1. Fondo del arco (Gris oscuro)
+
+                // Fondo Gris
 
                 ctx.beginPath();
 
                 ctx.arc(centerX, centerY, radius, startAngle, endAngle, false);
 
-                ctx.lineWidth = 25;
-
-                ctx.strokeStyle = "#1a1a1a";
-
-                ctx.stroke();
+                ctx.lineWidth = 25; ctx.strokeStyle = "#1a1a1a"; ctx.stroke();
 
 
 
-                // 2. Arco de RPM (Dinámico)
+                // Arco RPM
 
                 var currentEndAngle = startAngle + (totalAngle * rpmPercentage);
 
-                
-
-                // Gradiente Lineal para el color
-
                 var gradient = ctx.createLinearGradient(0, 0, width, 0);
 
-                gradient.addColorStop(0.0, "#00FFFF"); // Cyan (Bajas)
-
-                gradient.addColorStop(0.6, "#00FF00"); // Verde (Medias)
-
-                gradient.addColorStop(0.85, "#FFFF00"); // Amarillo (Altas)
-
-                gradient.addColorStop(1.0, "#FF0000"); // Rojo (Corte)
+                gradient.addColorStop(0.0, "#00FFFF"); gradient.addColorStop(0.5, "#00FF00"); gradient.addColorStop(1.0, "#FF0000");
 
 
 
@@ -320,51 +352,21 @@ Window {
 
                 ctx.arc(centerX, centerY, radius, startAngle, currentEndAngle, false);
 
-                ctx.lineWidth = 25;
-
-                ctx.strokeStyle = gradient;
-
-                ctx.lineCap = "butt"; // Bordes planos para look digital
-
-                ctx.stroke();
+                ctx.lineWidth = 25; ctx.strokeStyle = gradient; ctx.stroke();
 
 
 
-                // 3. Marca de Redline (Visual)
+                // Redline
 
                 var redLineStart = startAngle + (totalAngle * (root.redLineRPM / root.maxRPM));
 
                 ctx.beginPath();
 
-                ctx.arc(centerX, centerY, radius + 20, redLineStart, endAngle, false);
+                ctx.arc(centerX, centerY, radius + 25, redLineStart, endAngle, false);
 
-                ctx.lineWidth = 4;
-
-                ctx.strokeStyle = "#FF0000";
-
-                ctx.stroke();
+                ctx.lineWidth = 4; ctx.strokeStyle = "#FF0000"; ctx.stroke();
 
             }
-
-        }
-
-        
-
-        // Texto RPM pequeño debajo
-
-        Text {
-
-            anchors.centerIn: parent
-
-            anchors.verticalCenterOffset: -240
-
-            text: Math.round(root.rpmVal)
-
-            color: root.rpmVal > root.redLineRPM ? "red" : "#888"
-
-            font.family: mainFont.name
-
-            font.pixelSize: 24
 
         }
 
@@ -372,15 +374,119 @@ Window {
 
 
 
-    // --- PANEL CENTRAL: VELOCIDAD Y MARCHA ---
+    // 2. INFORMACIÓN CENTRAL (LUCES + VELOCIDAD)
 
     ColumnLayout {
 
         anchors.centerIn: parent
 
-        spacing: -10
+        spacing: -15 
 
 
+
+        // A. LUCES (Baja/Alta) - AHORA CON 4 LÍNEAS EN LA VERDE
+
+        Canvas {
+
+            id: lightsDisplay
+
+            Layout.alignment: Qt.AlignHCenter
+
+            width: 240; height: 80 
+
+            Layout.bottomMargin: 10
+
+
+
+            property bool lowOn: root.lowBeam
+
+            property bool highOn: root.highBeam
+
+            onLowOnChanged: requestPaint()
+
+            onHighOnChanged: requestPaint()
+
+
+
+            onPaint: {
+
+                var ctx = getContext("2d");
+
+                ctx.reset();
+
+                ctx.lineCap = "round"; ctx.lineJoin = "round";
+
+
+
+                // LUZ BAJA (Verde) - Centrada a la izquierda
+
+                if (root.lowBeam) {
+
+                    ctx.strokeStyle = "#00FF00"; ctx.lineWidth = 6; 
+
+                    
+
+                    // Icono "D"
+
+                    ctx.beginPath(); ctx.arc(70, 40, 18, -Math.PI/2, Math.PI/2, false); ctx.closePath(); ctx.stroke();
+
+                    
+
+                    // 4 RAYOS (Actualizado para tener 4 líneas)
+
+                    ctx.beginPath(); 
+
+                    ctx.moveTo(50, 25); ctx.lineTo(30, 35); // Línea 1
+
+                    ctx.moveTo(50, 34); ctx.lineTo(30, 44); // Línea 2
+
+                    ctx.moveTo(50, 43); ctx.lineTo(30, 53); // Línea 3
+
+                    ctx.moveTo(50, 52); ctx.lineTo(30, 62); // Línea 4
+
+                    ctx.stroke();
+
+                }
+
+
+
+                // LUZ ALTA (Azul) - Centrada a la derecha
+
+                if (root.highBeam) {
+
+                    ctx.strokeStyle = "#00AEFF"; ctx.lineWidth = 6; 
+
+                    
+
+                    // Icono "D"
+
+                    ctx.beginPath(); ctx.arc(170, 40, 18, -Math.PI/2, Math.PI/2, false); ctx.closePath(); ctx.stroke();
+
+                    
+
+                    // 4 RAYOS
+
+                    ctx.beginPath(); 
+
+                    ctx.moveTo(150, 25); ctx.lineTo(125, 25); 
+
+                    ctx.moveTo(150, 35); ctx.lineTo(125, 35); 
+
+                    ctx.moveTo(150, 45); ctx.lineTo(125, 45); 
+
+                    ctx.moveTo(150, 55); ctx.lineTo(125, 55); 
+
+                    ctx.stroke();
+
+                }
+
+            }
+
+        }
+
+
+
+        // B. NÚMERO VELOCIDAD
 
         Text {
 
@@ -390,17 +496,19 @@ Window {
 
             font.family: mainFont.name
 
-            font.pixelSize: 160
+            font.pixelSize: 180
 
             font.bold: true
 
             Layout.alignment: Qt.AlignHCenter
 
-            style: Text.Outline
-
-            styleColor: "#00FFFF" // Borde Cyan "Glow"
+            style: Text.Outline; styleColor: "#00FFFF"
 
         }
+
+
+
+        // C. ETIQUETA KM/H
 
         Text {
 
@@ -418,43 +526,53 @@ Window {
 
         }
 
-        
-
-        // Caja de Marcha (Gear)
-
-        Rectangle {
-
-            Layout.topMargin: 20
-
-            Layout.alignment: Qt.AlignHCenter
-
-            width: 80; height: 60
-
-            color: "#222"
-
-            border.color: gearVal === "N" ? "#00FF00" : "#555"
-
-            border.width: 2
-
-            radius: 5
+    }
 
 
 
-            Text {
+    // =========================================================
 
-                anchors.centerIn: parent
+    //    ELEMENTOS DE ESQUINA INFERIOR (TEMP Y GASOLINA)
 
-                text: root.gearVal
+    // =========================================================
 
-                color: gearVal === "N" ? "#00FF00" : "white"
 
-                font.family: mainFont.name
 
-                font.pixelSize: 40
+    // 1. TEMPERATURA
 
-                font.bold: true
+    Row {
 
-            }
+        anchors.bottom: parent.bottom
+
+        anchors.bottomMargin: 40 
+
+        anchors.left: parent.left
+
+        anchors.leftMargin: 80 
+
+        spacing: 15
+
+
+
+        Rectangle { 
+
+            width: 20; height: 50; color: "transparent"; border.color: root.tempVal > 100 ? "red" : "white"; border.width: 2; radius: 10
+
+            Rectangle { 
+
+                width: 12; height: (root.tempVal / 120) * 40; color: root.tempVal > 100 ? "red" : (root.tempVal > 90 ? "yellow" : "#00FFFF"); radius: 4; 
+
+                anchors.bottom: parent.bottom; anchors.bottomMargin: 4; anchors.horizontalCenter: parent.horizontalCenter 
+
+            } 
+
+        }
+
+        Column { 
+
+            Text { text: Math.round(root.tempVal) + "°C"; color: "white"; font.family: mainFont.name; font.pixelSize: 28 } 
+
+            Text { text: "TEMP"; color: "#888"; font.family: mainFont.name; font.pixelSize: 12 } 
 
         }
 
@@ -462,105 +580,43 @@ Window {
 
 
 
-    // --- PANELES INFERIORES (TEMP Y BATERÍA) ---
+    // 2. GASOLINA
 
-    RowLayout {
+    Row {
 
         anchors.bottom: parent.bottom
 
-        anchors.bottomMargin: 30
+        anchors.bottomMargin: 40
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.right: parent.right
 
-        width: 700
+        anchors.rightMargin: 80 
 
-        spacing: 300 // Separar a las esquinas
+        spacing: 20
 
+        
 
+        // Letra F y Cuña
 
-        // Izquierda: Temperatura
+        Item {
 
-        Row {
+            width: 20; height: 80
 
-            spacing: 15
+            anchors.verticalCenter: parent.verticalCenter
 
-            // Icono Termómetro (Dibujado con Shapes)
+            Canvas {
 
-            Rectangle {
+                anchors.fill: parent
 
-                width: 20; height: 50
+                onPaint: {
 
-                color: "transparent"
+                    var ctx = getContext("2d");
 
-                border.color: root.tempVal > 100 ? "red" : "white"
+                    ctx.strokeStyle = "#00AEFF"; ctx.fillStyle = "#00AEFF"; ctx.lineWidth = 2;
 
-                border.width: 2
+                    ctx.font = "bold 16px sans-serif"; ctx.fillText("F", 0, 15);
 
-                radius: 10
-
-                
-
-                // Líquido interno
-
-                Rectangle {
-
-                    width: 12; height: (root.tempVal / 120) * 40
-
-                    color: root.tempVal > 100 ? "red" : (root.tempVal > 90 ? "yellow" : "#00FFFF")
-
-                    radius: 4
-
-                    anchors.bottom: parent.bottom
-
-                    anchors.bottomMargin: 4
-
-                    anchors.horizontalCenter: parent.horizontalCenter
-
-                    
-
-                    // Animación de parpadeo si es crítico
-
-                    SequentialAnimation on opacity {
-
-                        running: root.tempVal > 105
-
-                        loops: Animation.Infinite
-
-                        NumberAnimation { to: 0; duration: 200 }
-
-                        NumberAnimation { to: 1; duration: 200 }
-
-                    }
-
-                }
-
-            }
-
-            
-
-            Column {
-
-                Text { 
-
-                    text: Math.round(root.tempVal) + "°C"
-
-                    color: "white"
-
-                    font.family: mainFont.name
-
-                    font.pixelSize: 28 
-
-                }
-
-                Text { 
-
-                    text: "TEMP"
-
-                    color: "#888"
-
-                    font.family: mainFont.name
-
-                    font.pixelSize: 12 
+                    ctx.beginPath(); ctx.moveTo(5, 20); ctx.lineTo(15, 20); ctx.lineTo(10, 80); ctx.closePath(); ctx.stroke();
 
                 }
 
@@ -570,95 +626,73 @@ Window {
 
 
 
-        // Derecha: Batería
+        // Barras
 
-        Row {
+        Column {
 
-            spacing: 15
+            spacing: 4
 
-            layoutDirection: Qt.RightToLeft // Texto a la izquierda del icono
+            anchors.verticalCenter: parent.verticalCenter
 
-            
+            Repeater {
 
-            // Icono Batería
-
-            Item {
-
-                width: 50; height: 30
+                model: 10
 
                 Rectangle {
 
-                    id: battBody
+                    width: 35; height: 6; radius: 1
 
-                    width: 44; height: 30
+                    color: {
 
-                    color: "transparent"
+                        if (index >= 8) return "#FF0000"
 
-                    border.color: "white"
+                        if (index >= 5) return "#FFFF00"
 
-                    border.width: 2
+                        return "#00FF00"
 
-                    radius: 3
+                    }
 
-                }
+                    property int barThreshold: (9 - index) * 10
 
-                Rectangle {
+                    opacity: root.fuelVal > barThreshold ? 1.0 : 0.2
 
-                    width: 4; height: 14
+                    layer.enabled: root.fuelVal > barThreshold
 
-                    color: "white"
-
-                    anchors.left: battBody.right
-
-                    anchors.verticalCenter: battBody.verticalCenter
-
-                }
-
-                // Nivel de carga
-
-                Rectangle {
-
-                    width: (root.battVal / 15) * 40 // Escala aprox para 15V max
-
-                    height: 22
-
-                    x: 2; y: 4
-
-                    color: root.battVal < 11.5 ? "red" : "#00FF00"
+                    border.width: root.fuelVal > barThreshold ? 0 : 1; border.color: "#333"
 
                 }
 
             }
 
-            
+        }
 
-            Column {
 
-                Text { 
 
-                    text: root.battVal.toFixed(1) + "V"
+        // Icono Bomba
 
-                    color: "white"
+        Item {
 
-                    font.family: mainFont.name
+            width: 40; height: 40
 
-                    font.pixelSize: 28
+            anchors.verticalCenter: parent.verticalCenter
 
-                    anchors.right: parent.right 
+            Canvas {
 
-                }
+                anchors.fill: parent
 
-                Text { 
+                onPaint: {
 
-                    text: "BATT"
+                    var ctx = getContext("2d");
 
-                    color: "#888"
+                    ctx.strokeStyle = "#00AEFF"; ctx.lineWidth = 2; ctx.lineJoin = "round";
 
-                    font.family: mainFont.name
+                    ctx.strokeRect(5, 10, 20, 25);
 
-                    font.pixelSize: 12
+                    ctx.beginPath(); ctx.moveTo(2, 35); ctx.lineTo(28, 35); ctx.stroke();
 
-                    anchors.right: parent.right 
+                    ctx.strokeRect(10, 15, 10, 8);
+
+                    ctx.beginPath(); ctx.moveTo(25, 15); ctx.bezierCurveTo(35, 15, 35, 30, 25, 25); ctx.lineTo(25, 20); ctx.stroke();
 
                 }
 

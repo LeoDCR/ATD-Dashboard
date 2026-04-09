@@ -9,3 +9,7 @@ Also, and more important, we have as the brain of the project, the only connecti
 Right now we do need an external screen to see the changes made in the proyect, but we have the objective to being capable of making changes and seeing them without anything connected, like a test running in VS Code, but that will be seen later.
 
 ![First dashboard run](images/design3.png)
+
+
+V 1.4 Note:
+While the UI is now receiving data from the Python backend, the backend is still using placeholder data generation. The next major step is figuring out the best microcontroller communication protocol to get real sensor data from the bike into the Raspberry Pi.

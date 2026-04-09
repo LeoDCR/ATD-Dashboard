@@ -15,3 +15,12 @@ V 1.3:
 
 - The UI layer (`dashboard.qml`) is now temporarily self-sufficient for visual testing. It has an internal dummy-data generator.
 - `main.py` is currently stripped back to just act as a launcher for the QML engine. No serial data processing yet, focusing 100% on getting the frontend looking right.
+
+
+V 1.4:
+
+**Backend-Frontend Link Established:**
+The architecture is now fully integrated. 
+- `main.py` now hosts a `Backend` class that inherits from `QObject`.
+- It uses Qt Signals (`@Signal`) and Slots to push data variables (Speed, RPM, Temp, Fuel, Lights) asynchronously to the QML engine.
+- `dashboard.qml` uses a `Connections` block to catch these signals and trigger functions like `onSpeedChanged(val)` to update its internal properties.
