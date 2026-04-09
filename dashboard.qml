@@ -196,7 +196,7 @@ Window {
 
         }
 
-// Derecha
+        // Derecha
 
         Item {
 
@@ -208,9 +208,7 @@ Window {
 
                 anchors.fill: parent
 
-                // BORRA ESTA LÍNEA: layoutDirection: Qt.RightToLeft 
-
-                
+                layoutDirection: Qt.RightToLeft // Espejo
 
                 onPaint: {
 
@@ -220,17 +218,9 @@ Window {
 
                     ctx.beginPath();
 
-                    // Estas coordenadas ya dibujan la flecha hacia la derecha (>)
+                    ctx.moveTo(0, 0); ctx.lineTo(40, 20); ctx.lineTo(0, 40);
 
-                    ctx.moveTo(0, 0); 
-
-                    ctx.lineTo(40, 20); 
-
-                    ctx.lineTo(0, 40);
-
-                    ctx.closePath(); 
-
-                    ctx.fill();
+                    ctx.closePath(); ctx.fill();
 
                 }
 
