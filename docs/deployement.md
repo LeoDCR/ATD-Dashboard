@@ -13,9 +13,9 @@ Once having the hardware set up, (See about it in the hardware.md document) we c
 
 Connection process:
     1.- Having all the hardware connected; We go to the wifi connections using "win+r" and "ncpa.cpl", there we need to right click on the wifi network we're connected, go to properties, then sahring and enable the option to allow others to connect through this pc connected network.  
-    2.- On a new VSCode terminal, write "ssh ubuntu@raspberrypi.local"
+    2.- On a new VSCode terminal, write "ssh ubuntu@raspberrypi.local"  
     3.- Once connected, we can run the main.py to see the dashboard 
     
-    ![First dashboard run](images/dash-preliminar.png)
+![First dashboard run](images/dash-preliminar.png)
 
 
