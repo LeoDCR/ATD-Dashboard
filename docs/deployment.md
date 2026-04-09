@@ -52,3 +52,20 @@ How to set up the Autostart:
 Now, the UI boots up automatically as soon as the Raspberry Pi has power.
 
 ![First dashboard run](images/design4.png)
+
+
+## V 2.0
+
+### Bulletproof Autostart (Daemonization)
+In V1.4 we set up the basic service, but it was still tied to the active SSH session in some cases (closing VS Code killed the dashboard). To make it truly independent like a real motorcycle gauge cluster, we had to fully daemonize it.
+
+**The "Never Die" Setup:**
+1. Edit the service: `sudo nano /etc/systemd/system/dashboard.service`
+2. Ensure the `[Service]` section is properly configured to run under the correct user and environment variables.
+3. Reload the system daemons so it registers the hard changes:
+   `sudo systemctl daemon-reload`
+4. Enable and start:
+   `sudo systemctl enable dashboard.service`
+   `sudo systemctl start dashboard.service`
+
+**Result:** The dashboard is now completely independent. I can disconnect SSH, close my laptop, and the dashboard will keep running natively on the external monitor just by powering the Pi.

@@ -13,3 +13,21 @@ Right now we do need an external screen to see the changes made in the proyect, 
 
 V 1.4 Note:
 While the UI is now receiving data from the Python backend, the backend is still using placeholder data generation. The next major step is figuring out the best microcontroller communication protocol to get real sensor data from the bike into the Raspberry Pi.
+
+## V 2.0: The Hardware Overhaul
+
+**New Brain: Raspberry Pi Pico**
+We officially moved away from the initial Arduino/I2C testing setup and introduced the Raspberry Pi Pico as the dedicated sensor-reading microcontroller. 
+
+**Why the Pico?**
+- It runs MicroPython, keeping the entire project's codebase in the Python ecosystem.
+- Its 3.3V logic level matches the Raspberry Pi 4 perfectly, avoiding the need for logic level shifters.
+- It's incredibly fast and has plenty of GPIOs for all the motorcycle's analog and digital signals.
+
+**Communication: UART**
+The communication protocol between the Pico and the Pi 4 was changed to UART (Serial). 
+- Pico TX -> Pi 4 RX
+- Pico RX -> Pi 4 TX
+This proved to be much more stable and easier to debug for continuous data streaming compared to our early I2C attempts.
+
+![First dashboard run](images/setup1.jpeg)

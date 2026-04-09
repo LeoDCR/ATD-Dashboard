@@ -21,3 +21,18 @@ V 1.4:
 - **UI Tweaks:** Added the high/low beam indicators with custom drawn shapes (4 rays instead of a generic icon) and implemented a 10-bar style fuel gauge instead of a boring percentage text. It looks much more "cyberpunk/racing" now.
 
 ![First dashboard run](images/design4.png)
+
+
+## V 2.0
+
+- **Decision:** Switch from Arduino to Raspberry Pi Pico using UART.
+  **Context:** Arduino was okay for testing but the logic levels and I2C were giving me headaches.
+  **Outcome:** The Pico is way better. It's faster and I can code it in MicroPython.
+  
+- **Decision:** Separate the sensor logic into its own file (`pico_main.py`).
+  **Context:** I need to keep the code that runs on the Pico separate from the main dashboard code. 
+  **Outcome:** Created a dedicated script for the Pico. It reads the raw data and spits it out via Serial. 
+
+- **Decision:** Daemonize the Dashboard Process.
+  **Context:** The dashboard would close if I disconnected my laptop.
+  **Outcome:** Set up the systemd service to run as a background daemon. Now it's bulletproof.

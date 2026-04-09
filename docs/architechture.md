@@ -24,3 +24,14 @@ The architecture is now fully integrated.
 - `main.py` now hosts a `Backend` class that inherits from `QObject`.
 - It uses Qt Signals (`@Signal`) and Slots to push data variables (Speed, RPM, Temp, Fuel, Lights) asynchronously to the QML engine.
 - `dashboard.qml` uses a `Connections` block to catch these signals and trigger functions like `onSpeedChanged(val)` to update its internal properties.
+
+
+## V 2.0
+
+**Distributed System Architecture:**
+The project is now split into two separate Python environments:
+
+1. **Microcontroller Side (`pico_main.py`):** Runs on the RPi Pico using MicroPython. Its only job is to talk to the sensors and send the data through the UART port.
+2. **Main System Side (`main.py` + QML):** Runs on the RPi 4. It listens to the UART port, processes the incoming strings, and updates the UI.
+
+This split makes the dashboard much smoother because the RPi 4 doesn't waste time reading sensors; it only cares about the graphics.
