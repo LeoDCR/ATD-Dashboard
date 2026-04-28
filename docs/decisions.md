@@ -48,3 +48,10 @@ V 1.4:
 
 * **"Latest-Packet-Only" UART Parsing:** To completely eliminate UI rendering delays, we overhauled how the Raspberry Pi handles incoming serial data. Instead of processing incoming packets sequentially (which queues up stale data if the Pi's event loop stutters), the `main.py` backend now reads the entire contents of the serial buffer at once (`serial_port.read(in_waiting)`). It then splits the payload and explicitly extracts only the final index `[-1]`. This guarantees the QML dashboard always renders the absolute real-time state of the motorcycle, instantly discarding any micro-backlog of older telemetry.
 * **Embedded Boot Sequence Logging:** Added a numbered verbose logging sequence during the application's startup phase. Since this dashboard runs headlessly on a motorcycle, tracing the exact step of failure (e.g., PySide6 initialization, Serial connection, or QML parsing) via systemd logs is critical for on-the-fly debugging without needing to plug in external peripherals.
+
+
+
+## V2.3: Automated Sensor Validation
+
+* **Mechanical Speed Simulation:** Manually spinning the magnet wheel was insufficient for stress-testing the software low-pass filter and the UART transmission rate at highway speeds. We decided to build a physical test bench using a high-speed DC motor to spin the magnet.
+* **Logic vs. Power Isolation:** Instead of wiring a potentiometer directly in series with the DC motor (which would burn out the component due to high current draw), we used the Pico as a middleman. By reading a safe, low-voltage ADC signal and outputting a PWM signal to a transistor, we successfully separated the logic circuit from the power circuit, mirroring real-world automotive ECU design.

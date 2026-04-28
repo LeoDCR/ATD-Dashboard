@@ -42,3 +42,13 @@ In this version, we transitioned from simulated UI inputs to actual physical con
 * **Headlights:** Wired a push button to toggle the UI state between High Beam and Low Beam.
 
 **Architecture Note:** All these new physical inputs utilize the Pico's internal pull-up/pull-down resistors. This allows the MicroPython script to debounce the signals before packaging them into the clean CSV string sent via UART to the main Raspberry Pi 4.
+
+
+
+## V2.3: Hardware-in-the-Loop (HIL) Speed Simulator
+
+To properly test the Hall effect sensor at high, sustained speeds, we built a motorized physical simulator controlled by the Raspberry Pi Pico:
+
+* **Electronic Throttle:** Added a secondary potentiometer connected to `GP27` (ADC) to read user input.
+* **PWM Motor Control:** The Pico maps the ADC throttle reading to a 1kHz PWM output on `GP16`.
+* **Isolated Power Circuit:** To safely drive the high-current DC motor, the `GP16` PWM signal triggers a power transistor (acting as a switch). A flyback diode is wired in parallel with the motor to protect the Pico's logic board from inductive voltage spikes when the motor stops.
