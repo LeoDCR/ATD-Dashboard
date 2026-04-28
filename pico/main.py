@@ -73,4 +73,4 @@ while True:
     print(f"TX: {paquete.strip()}")
     
     # Espera corta para no saturar el buffer (20Hz de refresco)
-    utime.sleep(0.05)
+    utime.sleep(0.01)

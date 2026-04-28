@@ -36,3 +36,9 @@ V 1.4:
 - **Decision:** Daemonize the Dashboard Process.
   **Context:** The dashboard would close if I disconnected my laptop.
   **Outcome:** Set up the systemd service to run as a background daemon. Now it's bulletproof.
+
+
+## V2.1: Telemetry Synchronization & Data Filtering
+
+* **UART Buffer Overflow Fix (The "Delay" Issue):** During the initial integration of the Pico and the Raspberry Pi 4, the dashboard experienced a severe visual delay. The UI would lag several seconds behind the physical actions. We diagnosed this as a buffer overflow: the Pico was transmitting data at ~100Hz (`utime.sleep(0.01)`), flooding the Pi's serial port faster than the PySide6 event loop could parse it. The fix was twofold: we throttled the Pico's transmission rate to a stable 20Hz and implemented a buffer flush (`serial_port.reset_input_buffer()`) on the Pi 4 to ensure it only reads the freshest telemetry packet, instantly eliminating the lag.
+* **Software Low-Pass Filter for Speed:** The raw hardware interrupts from the Hall effect sensor were too sensitive, causing the speed readout on the dashboard to jitter erratically. Instead of adding a physical RC filter (capacitors/resistors) to the sensor wiring, we solved this entirely via software on the Pico. By storing the most recent speed pulses in a rolling array and calculating the average before sending it over UART, the QML interface now displays perfectly smooth and stable numbers.

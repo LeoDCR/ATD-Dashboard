@@ -31,3 +31,14 @@ The communication protocol between the Pico and the Pi 4 was changed to UART (Se
 This proved to be much more stable and easier to debug for continuous data streaming compared to our early I2C attempts.
 
 ![First dashboard run](images/setup1.jpeg)
+
+
+## V2.1: Physical Interface Integration
+
+In this version, we transitioned from simulated UI inputs to actual physical controls, routing all signals through the Raspberry Pi Pico to centralize the telemetry:
+
+* **Turn Signals (Direccionales):** Integrated a physical 3-position toggle switch (Left - Off - Right) wired directly to the Pico's GPIO pins. 
+* **Hazard Lights (Intermitentes):** Added a dedicated push button to trigger both signals simultaneously.
+* **Headlights:** Wired a push button to toggle the UI state between High Beam and Low Beam.
+
+**Architecture Note:** All these new physical inputs utilize the Pico's internal pull-up/pull-down resistors. This allows the MicroPython script to debounce the signals before packaging them into the clean CSV string sent via UART to the main Raspberry Pi 4.
