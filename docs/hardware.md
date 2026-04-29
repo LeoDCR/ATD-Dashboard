@@ -52,3 +52,17 @@ To properly test the Hall effect sensor at high, sustained speeds, we built a mo
 * **Electronic Throttle:** Added a secondary potentiometer connected to `GP27` (ADC) to read user input.
 * **PWM Motor Control:** The Pico maps the ADC throttle reading to a 1kHz PWM output on `GP16`.
 * **Isolated Power Circuit:** To safely drive the high-current DC motor, the `GP16` PWM signal triggers a power transistor (acting as a switch). A flyback diode is wired in parallel with the motor to protect the Pico's logic board from inductive voltage spikes when the motor stops.
+
+
+
+## V2.5: Lighting Interface & Indicator LEDs
+
+In this version, we integrated the hardware controls for the motorcycle's lighting system, using temporary workarounds for missing physical components:
+
+* **Turn Signals (Workaround):** Due to the temporary lack of a physical 3-position switch, we mapped a standard 10k potentiometer to an ADC pin (`GP28`). The code divides the analog reading into three zones (Left, Center/Off, Right) to simulate the mechanical switch.
+* **Headlight Control:** Added a momentary push-button (`GP18` with internal Pull-Up) to control the headlight states (Off -> Low Beam -> High Beam).
+* **Physical Indicator LEDs:** Wired four LEDs (`GP10`, `GP11`, `GP12`, `GP13`) directly to the Pico to provide immediate physical hardware feedback for the Left Turn, Right Turn, Low Beam, and High Beam signals before they are transmitted via UART.
+
+
+![Breadboard Setup for V2.5](images/HardwareOverview.jpeg)
+*Pico wired with temporary potentiometers for turn signals, push-button for headlights, and physical indicator LEDs.*

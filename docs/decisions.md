@@ -60,3 +60,10 @@ This document is about all the important decisions and why they were taken
 ## V2.4: UI Sweep Validation Mode
 
 * **Diagnostic Sweep Test:** To validate the QML graphical rendering (specifically the tachometer arc wrapping and text scaling) without relying on the physical Raspberry Pi Pico or the motor simulator, we overhauled the fallback simulation mode. Instead of generating random jittery values, the Python backend now executes a deterministic "sweep test," smoothly animating the speed from 0 to 320 km/h and back down. This allows UI/UX designers to test the full range of motion of the graphical components on any standard PC strictly through software.
+
+
+
+## V2.5: Non-Blocking Logic & Silent Boot
+
+* **Non-Blocking Blinker Logic:** To make the turn signals flash, we could not use a simple `utime.sleep()` command, as that would halt the entire script and pause the UART telemetry transmission, causing a massive lag on the dashboard. Instead, we implemented an asynchronous cycle counter (`ciclos_parpadeo`) within the main loop to toggle the LED states every 500ms without interrupting the data flow.
+* **State Machine for Headlights:** We implemented a basic state machine with a software debounce for the headlight button. This allows a single push-button to cycle continuously through three states (`0: Off`, `1: Low Beam`, `2: High Beam`) cleanly.

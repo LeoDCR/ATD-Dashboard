@@ -74,3 +74,14 @@ In V1.4 we set up the basic service, but it was still tied to the active SSH ses
 ## V2.4: Systemd Process Management (The "Zombie Killer")
 
 * **Automated Process Cleanup:** During manual testing and system restarts, we encountered issues where old PySide6/Python processes remained running in the background ("zombies"), causing UI overlaps and resource conflicts. To fix this, we updated the `dashboard.service` systemd configuration with a pre-execution safeguard: `ExecStartPre=-/usr/bin/killall python3`. This guarantees that the operating system kills any hanging Python instances, ensuring a perfectly clean slate every time the dashboard boots up on the motorcycle.
+
+
+
+## V2.5: Linux "Silent Boot" Configuration
+
+To make the dashboard look like a professional OEM product rather than a DIY computer, we had to hide the underlying Linux boot sequence that previously splashed across the screen.
+
+1. **Disable Cloud-Init:** Ubuntu attempts to connect to network services on boot, delaying startup and showing logs. We disabled this completely by creating an empty override file using the command `sudo touch /etc/cloud/cloud-init.disabled`.
+2. **Kernel Log Suppression:** We modified the kernel parameters to hide the blinking cursor and all boot text. By editing `/boot/firmware/cmdline.txt`, we appended the following arguments strictly to the end of the single line: `quiet loglevel=0 vt.global_cursor_default=0 logo.nologo`.
+
+This combination results in a pure black screen immediately upon power-on, transitioning directly into the QML interface seamlessly.
