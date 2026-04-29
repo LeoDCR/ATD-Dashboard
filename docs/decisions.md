@@ -67,3 +67,15 @@ This document is about all the important decisions and why they were taken
 
 * **Non-Blocking Blinker Logic:** To make the turn signals flash, we could not use a simple `utime.sleep()` command, as that would halt the entire script and pause the UART telemetry transmission, causing a massive lag on the dashboard. Instead, we implemented an asynchronous cycle counter (`ciclos_parpadeo`) within the main loop to toggle the LED states every 500ms without interrupting the data flow.
 * **State Machine for Headlights:** We implemented a basic state machine with a software debounce for the headlight button. This allows a single push-button to cycle continuously through three states (`0: Off`, `1: Low Beam`, `2: High Beam`) cleanly.
+
+
+
+
+## V2.5.1: High-Resolution Telemetry & Algorithmic Smoothing (Hotfix)
+
+* **Time-Based Speed Calculation (Infinite Resolution):** The previous iteration calculated speed by counting Hall sensor pulses over a fixed 1-second window, which mathematically limited the resolution to 5 km/h steps and caused the dashboard UI to jump abruptly. We rewrote the logic to measure the exact time elapsed (delta time in milliseconds) between individual pulses. This provides an instantaneous frequency calculation with infinite decimal resolution.
+* **Mathematical Low-Pass Filter:** To prevent the UI from snapping to 0 when braking hard or jumping erratically due to sensor noise, we implemented an algorithmic smoothing filter (`velocidad_suavizada += (velocidad_objetivo - velocidad_suavizada) * 0.1`). The transmitted speed now mathematically "chases" the target speed, mimicking the physical inertia of a real mechanical gauge.
+* **Single-Thread Architecture Optimization:** We deprecated the `_thread` module previously used for the DHT11 temperature sensor. Multi-threading on the Pico's MicroPython environment introduced unnecessary overhead. We replaced it with a non-blocking `utime.ticks_diff()` check inside the main loop, streamlining the processor's workload and allowing the main UART loop to run flawlessly at 50ms intervals (20Hz).
+
+
+<video src="images/SpeedDemo.mp4" controls="controls" style="max-width: 100%;"></video>
