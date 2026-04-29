@@ -1,13 +1,13 @@
 This document is about everything related with installing and running the system through the Raspberry pi 4 Model B
 
-V 1.0:
+## V 1.0:
 
 Changes:
 
 Changed the environment from ubuntu core to ubuntu server, this was to make easier modifying the code on the go without having to make big changes in the system, just having to change and update the code in the Raspberry.
 Also made this beacuse i forgot the password i had before :( 
 
-V 1.1:
+## V 1.1:
 
 Once having the hardware set up, (See about it in the hardware.md document) we connect everything, and start the set up process, we will be able to connect to the raspberry, send the updated codes and run them to see the changes in the external screen.
 
@@ -18,7 +18,7 @@ Connection process:
     
 ![First dashboard run](images/dash-preliminar.png)
 
-V 1.2:
+## V 1.2:
 
 To send new modified code to the raspberry to run them on the external screen:  
 
@@ -36,7 +36,7 @@ Local testing process:
 This opens the dashboard in a window on the computer using fake data, so we can edit the QML and see changes instantly without the hardware.
 
 
-V 1.4:
+## V 1.4:
 
 **Autostart Config (The "Turn Key" Feature):**
 I finally got tired of connecting via SSH and manually typing commands to start the dashboard every time I booted the Raspberry Pi. To make it behave like a real motorcycle dashboard (turns on when the key turns), I created a systemd service.
@@ -69,3 +69,8 @@ In V1.4 we set up the basic service, but it was still tied to the active SSH ses
    `sudo systemctl start dashboard.service`
 
 **Result:** The dashboard is now completely independent. I can disconnect SSH, close my laptop, and the dashboard will keep running natively on the external monitor just by powering the Pi.
+
+
+## V2.4: Systemd Process Management (The "Zombie Killer")
+
+* **Automated Process Cleanup:** During manual testing and system restarts, we encountered issues where old PySide6/Python processes remained running in the background ("zombies"), causing UI overlaps and resource conflicts. To fix this, we updated the `dashboard.service` systemd configuration with a pre-execution safeguard: `ExecStartPre=-/usr/bin/killall python3`. This guarantees that the operating system kills any hanging Python instances, ensuring a perfectly clean slate every time the dashboard boots up on the motorcycle.

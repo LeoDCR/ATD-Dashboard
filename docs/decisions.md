@@ -1,20 +1,20 @@
 This document is about all the important decisions and why they were taken
 
 
-V 1.2:
+## V 1.2:
 
 - Decided to run the UI code locally on the PC. Pushing to the Raspberry Pi for every small color or pixel change in the QML was a pain and took way too long.
 - Left an overlapping number bug on the speedometer for now. The main goal right now is just to get the general layout and shapes working. I'll fix the text issues later.
 
 
-V 1.3:
+## V 1.3:
 
 - Big visual upgrade: Moved away from simple text elements and implemented QML `Canvas` to draw a dynamic, color-changing arc for the RPMs and added shapes for battery and temp indicators. It looks way better for the bike.
 - To test the animations without wiring up the Pico or writing complex Python logic yet, I added a mock data `Timer` directly inside the `dashboard.qml` file. This simulates the bike revving up and down so I can see the UI reacting in real-time.
 - Fixed the overlapping text bug on the speedometer by cleaning up the QML layouts.
 
 
-V 1.4:
+## V 1.4:
 
 - **The Big Disconnect:** Turned off the mock data `Timer` inside the QML. The frontend is no longer faking the numbers.
 - **Python Integration:** Established the real connection between the QML frontend and the Python backend using QML `Connections` targeting the `backend` context property. Now, Python pushes the data, and QML just listens and updates the UI.
@@ -55,3 +55,8 @@ V 1.4:
 
 * **Mechanical Speed Simulation:** Manually spinning the magnet wheel was insufficient for stress-testing the software low-pass filter and the UART transmission rate at highway speeds. We decided to build a physical test bench using a high-speed DC motor to spin the magnet.
 * **Logic vs. Power Isolation:** Instead of wiring a potentiometer directly in series with the DC motor (which would burn out the component due to high current draw), we used the Pico as a middleman. By reading a safe, low-voltage ADC signal and outputting a PWM signal to a transistor, we successfully separated the logic circuit from the power circuit, mirroring real-world automotive ECU design.
+
+
+## V2.4: UI Sweep Validation Mode
+
+* **Diagnostic Sweep Test:** To validate the QML graphical rendering (specifically the tachometer arc wrapping and text scaling) without relying on the physical Raspberry Pi Pico or the motor simulator, we overhauled the fallback simulation mode. Instead of generating random jittery values, the Python backend now executes a deterministic "sweep test," smoothly animating the speed from 0 to 320 km/h and back down. This allows UI/UX designers to test the full range of motion of the graphical components on any standard PC strictly through software.

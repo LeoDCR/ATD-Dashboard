@@ -1,7 +1,7 @@
 This document is about everything regarding the hardware in the project.
 
 
-V 1.1:
+## V 1.1:
 We already have some hardware working along qith the prevoius code, this consists of: A potenciometer, a temperature sensor, a hall sensor and an external motor.
 
 Also, and more important, we have as the brain of the project, the only connections we have are the power usb-c cable to the raspberry and an Ethernet cable to access ubuntu from our VS Code terminal without needing an external monitor, mouse and keyboard connected to the raspberry.
@@ -11,7 +11,7 @@ Right now we do need an external screen to see the changes made in the proyect, 
 ![First dashboard run](images/design3.png)
 
 
-V 1.4 Note:
+## V 1.4 Note:
 While the UI is now receiving data from the Python backend, the backend is still using placeholder data generation. The next major step is figuring out the best microcontroller communication protocol to get real sensor data from the bike into the Raspberry Pi.
 
 ## V 2.0: The Hardware Overhaul

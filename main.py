@@ -70,9 +70,15 @@ class Backend(QObject):
 
         
 
+        # --- VARIABLES DE LA NUEVA SIMULACIÓN ---
+
         self._sim_fuel = 100.0
 
         self._sim_tick = 0
+
+        self._sim_speed = 0.0       # Empezamos en 0
+
+        self._sim_speed_up = True   # Controla si va subiendo o bajando
 
 
 
@@ -104,7 +110,7 @@ class Backend(QObject):
 
         if self.simulacion_activa:
 
-            print("⚠️ Pico no detectada. Iniciando en MODO SIMULACIÓN.")
+            print("⚠️ Pico no detectada. Iniciando MODO BARRIDO (Sweep Test).")
 
 
 
@@ -124,7 +130,37 @@ class Backend(QObject):
 
         self._sim_tick += 1
 
-        speed = random.uniform(40, 45)
+        
+
+        # --- LA MAGIA DEL BARRIDO 0 a 320 ---
+
+        step = 3.2 # Sube 3.2 km/h cada 100ms (tarda 10 segundos en llegar a 320)
+
+        
+
+        if self._sim_speed_up:
+
+            self._sim_speed += step
+
+            if self._sim_speed >= 320.0:
+
+                self._sim_speed = 320.0
+
+                self._sim_speed_up = False # Llegó al tope, ahora baja
+
+        else:
+
+            self._sim_speed -= step
+
+            if self._sim_speed <= 0.0:
+
+                self._sim_speed = 0.0
+
+                self._sim_speed_up = True  # Llegó a cero, ahora sube
+
+                
+
+        # Variables random para que no se vea muerto lo demás
 
         temp = 85.0 + random.uniform(-2, 2)
 
@@ -144,7 +180,9 @@ class Backend(QObject):
 
 
 
-        self.speedChanged.emit(speed)
+        # Emitimos la velocidad del barrido en lugar del random
+
+        self.speedChanged.emit(self._sim_speed)
 
         self.rpmChanged.emit(0.0) 
 
@@ -158,23 +196,17 @@ class Backend(QObject):
 
 
 
-    # --- AQUÍ ESTÁ LA MAGIA DEL CERO DELAY (CON ESPACIOS CORRECTOS) ---
-
     def leer_datos_uart(self):
 
         if self.serial_port and self.serial_port.in_waiting > 0:
 
             try:
 
-                # Leemos todo lo acumulado de golpe
-
                 datos_crudos = self.serial_port.read(self.serial_port.in_waiting).decode('utf-8')
 
                 lineas = datos_crudos.split('\n')
 
                 
-
-                # Limpiamos y agarramos SOLO la última línea (la más fresca)
 
                 lineas_validas = [l for l in lineas if l.strip() != ""]
 
@@ -224,27 +256,17 @@ class Backend(QObject):
 
 if __name__ == "__main__":
 
-    print("1. Arrancando aplicación...")
-
     app = QGuiApplication(sys.argv)
-
-    
-
-    print("2. Creando motor gráfico...")
 
     engine = QQmlApplicationEngine()
 
     
-
-    print("3. Conectando con la Pico / Backend...")
 
     backend = Backend()
 
     engine.rootContext().setContextProperty("backend", backend)
 
     
-
-    print("4. Leyendo el archivo dashboard.qml...")
 
     qml_path = os.path.join(os.path.dirname(__file__), "dashboard.qml")
 
@@ -254,12 +276,8 @@ if __name__ == "__main__":
 
     if not engine.rootObjects(): 
 
-        print("🚨 ERROR CRÍTICO: PySide6 no pudo cargar el diseño QML.")
-
         sys.exit(-1)
 
     
-
-    print("5. ¡Todo en orden! Mandando video a la pantalla...")
 
     sys.exit(app.exec())
