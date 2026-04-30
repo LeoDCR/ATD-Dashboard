@@ -1,7 +1,7 @@
 # 🏍️ Moto Dashboard IoT: Sistema de Telemetría de Alta Resolución
 ### **Desarrollado durante la carrera de Ingenieria en Tecnologias Automotrices en la Universidad Autónoma de Guadalajara (UAG)**
 
-![Maqueta Final V2.6](docs/images/image_36a522.jpg)
+![Maqueta Final V2.6](docs/images/FinalPrototype.jpeg)
 
 Este proyecto consiste en un cuadro de instrumentos digital de alto rendimiento para motocicletas, integrando hardware embebido de doble capa (**Raspberry Pi 4** y **Raspberry Pi Pico**) con una interfaz gráfica moderna desarrollada en **PySide6 (Qt)**. El sistema no solo visualiza datos, sino que incluye un simulador mecánico "Hardware-in-the-Loop" para validación de sensores.
 
