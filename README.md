@@ -1,7 +1,7 @@
 # 🏍️ Moto Dashboard IoT: Sistema de Telemetría de Alta Resolución
 ### **Desarrollado durante la carrera de Ingenieria en Tecnologias Automotrices en la Universidad Autónoma de Guadalajara (UAG)**
 
-![Maqueta Final V2.6](images/image_36a522.jpg)
+![Maqueta Final V2.6](docs/images/image_36a522.jpg)
 
 Este proyecto consiste en un cuadro de instrumentos digital de alto rendimiento para motocicletas, integrando hardware embebido de doble capa (**Raspberry Pi 4** y **Raspberry Pi Pico**) con una interfaz gráfica moderna desarrollada en **PySide6 (Qt)**. El sistema no solo visualiza datos, sino que incluye un simulador mecánico "Hardware-in-the-Loop" para validación de sensores.
 
@@ -17,7 +17,7 @@ Este proyecto consiste en un cuadro de instrumentos digital de alto rendimiento 
 ---
 
 ## ⚡ Demostración en Tiempo Real
-![Smooth Tachometer Demo](images/SpeedDemo.gif)
+![Smooth Tachometer Demo](docs/images/SpeedDemo.gif)
 *Visualización de la respuesta suave del tacómetro y velocímetro gracias al filtro de suavizado algorítmico.*
 
 ---
@@ -37,7 +37,7 @@ Este proyecto consiste en un cuadro de instrumentos digital de alto rendimiento 
 ## 🔌 Hardware Overview
 El sistema utiliza una arquitectura distribuida para garantizar que el renderizado gráfico no interfiera con la lectura crítica de los sensores.
 
-![Hardware Setup](images/HardwareOverview.jpeg)
+![Hardware Setup](docs/images/HardwareOverview.jpeg)
 
 ### Sensores e Inputs:
 * **Sensor Hall:** Lectura de velocidad magnética.
@@ -76,7 +76,7 @@ Para eliminar el texto de arranque de Linux, modifica el archivo `/boot/firmware
 ---
 
 ## 📸 Galería de Desarrollo
-![Overview Hardware y Pantalla](images/HardwareAndScreenOverview.jpeg)
+![Overview Hardware y Pantalla](docs/images/HardwareAndScreenOverview.jpeg)
 *Integración final de la pantalla de 7 pulgadas con el banco de pruebas de sensores.*
 
 ---
