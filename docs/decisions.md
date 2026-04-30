@@ -79,3 +79,10 @@ This document is about all the important decisions and why they were taken
 
 
 ![Demostración de aguja fluida](images/SpeedDemo.gif)
+
+
+
+## V3.0: Digital Switch Debouncing & Priority Logic
+
+* **Hardware Debounce via Software:** Physical push-buttons (like the new Hazard button) suffer from mechanical bouncing, which can cause the state to rapidly toggle on and off in a single press. We implemented a software debounce using `utime.ticks_diff()` to enforce a 250ms cooldown window between valid button presses, ensuring reliable toggling.
+* **Hazard Override State:** We structured the logic so that the `estado_hazards` boolean acts as an override. If the hazard button is active, it forces both turn signals to flash simultaneously, safely ignoring the current physical position of the 3-position turn signal switch, mirroring real-world automotive safety compliance.

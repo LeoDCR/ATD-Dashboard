@@ -75,21 +75,14 @@ class Backend(QObject):
         self.lightsChanged.emit(False, False)
         self.turnSignalsChanged.emit(False, False)
 
-    # --- AQUÍ ESTÁ LA NUEVA MAGIA A PRUEBA DE CORTES ---
     def leer_datos_uart(self):
         if self.serial_port and self.serial_port.in_waiting > 0:
             try:
-                ultima_linea_valida = ""
-                # Leemos todo el buffer línea por línea para no dejar nada a la mitad
-                while self.serial_port.in_waiting > 0:
-                    # errors='ignore' evita que un mal contacto del cable crashee el programa
-                    linea_cruda = self.serial_port.readline().decode('utf-8', errors='ignore').strip()
-                    if linea_cruda:
-                        ultima_linea_valida = linea_cruda
+                datos_crudos = self.serial_port.read(self.serial_port.in_waiting).decode('utf-8')
+                lineas = [l for l in datos_crudos.split('\n') if l.strip() != ""]
                 
-                # Procesamos SOLO la última línea completa
-                if ultima_linea_valida:
-                    linea = ultima_linea_valida.replace("TX:", "").strip()
+                if lineas:
+                    linea = lineas[-1].strip().replace("TX:", "").strip()
                     partes = linea.split(',')
                     
                     if len(partes) >= 7:
@@ -108,7 +101,6 @@ class Backend(QObject):
                         self.turnSignalsChanged.emit(izq, der)
                         self.lightsChanged.emit(baja, alta)
             except Exception as e:
-                # Si llega a pasar un error rarísimo, que siga funcionando sin cerrarse
                 pass
 
 if __name__ == "__main__":

@@ -66,3 +66,17 @@ In this version, we integrated the hardware controls for the motorcycle's lighti
 
 ![Breadboard Setup for V2.5](images/HardwareOverview.jpeg)
 *Pico wired with temporary potentiometers for turn signals, push-button for headlights, and physical indicator LEDs.*
+
+
+
+## V3.0: Final Physical Interface & Assembly
+
+For the final release, the temporary ADC workarounds were removed and replaced with the permanent physical switches intended for the motorcycle's dashboard:
+
+* **3-Position Toggle Switch:** Replaced the analog potentiometer with a heavy-duty 3-position switch connected to digital pins `GP20` (Left) and `GP21` (Right) using internal pull-up resistors.
+* **Hazard Lights Button:** Integrated a dedicated push-button on `GP22` to trigger the emergency flashers.
+* **Final Prototype Assembly:** All components (Raspberry Pi 4, Pico, breadboard, physical switches, and the HIL motor simulator) were mounted into a custom test bench with a carbon fiber vinyl finish for professional presentation.
+
+### Final Dashboard Assembly
+![Maqueta Final V3.0](images/FinalPrototype.jpeg)
+*Fully functional prototype featuring physical controls, UI display, and hardware-in-the-loop speed simulator.*
