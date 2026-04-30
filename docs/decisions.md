@@ -78,4 +78,4 @@ This document is about all the important decisions and why they were taken
 * **Single-Thread Architecture Optimization:** We deprecated the `_thread` module previously used for the DHT11 temperature sensor. Multi-threading on the Pico's MicroPython environment introduced unnecessary overhead. We replaced it with a non-blocking `utime.ticks_diff()` check inside the main loop, streamlining the processor's workload and allowing the main UART loop to run flawlessly at 50ms intervals (20Hz).
 
 
-<video src="images/SpeedDemo.mp4" controls="controls" style="max-width: 100%;"></video>
+![Demostración de aguja fluida](images/SpeedDemo.gif)
